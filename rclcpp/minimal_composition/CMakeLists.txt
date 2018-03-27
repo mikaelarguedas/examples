@@ -19,7 +19,9 @@ include_directories(include)
 
 add_library(composition_nodes SHARED
             src/publisher_node.cpp
-            src/subscriber_node.cpp)
+            src/subscriber_node.cpp
+            src/pubsub_node.cpp
+)
 target_compile_definitions(composition_nodes
   PRIVATE "MINIMAL_COMPOSITION_DLL")
 ament_target_dependencies(composition_nodes rclcpp std_msgs class_loader)
@@ -38,6 +40,11 @@ add_executable(composition_composed src/composed.cpp)
 target_link_libraries(composition_composed composition_nodes)
 ament_target_dependencies(composition_composed rclcpp class_loader)
 
+add_executable(composition_pubsub src/standalone_pubsub.cpp)
+target_link_libraries(composition_pubsub composition_nodes)
+ament_target_dependencies(composition_pubsub
+  rclcpp composition_nodes)
+
 install(TARGETS
   composition_nodes
   ARCHIVE DESTINATION lib
@@ -46,6 +53,7 @@ install(TARGETS
 
 install(TARGETS
   composition_publisher
+  composition_pubsub
   composition_subscriber
   composition_composed
   DESTINATION lib/${PROJECT_NAME})
